@@ -1,0 +1,508 @@
+SELECT * FROM product LIMIT 1;
+
+
+To reset data types
+ALTER TABLE product ALTER COLUMN department_id TYPE integer USING department_id::integer;
+ALTER TABLE order_prior ALTER COLUMN product_id TYPE integer USING product_id::integer;
+ALTER TABLE order_prior ALTER COLUMN add_to_cart_order TYPE integer USING add_to_cart_order::integer;
+ALTER TABLE order_prior ALTER COLUMN reordered TYPE integer USING reordered::integer;
+
+
+
+
+SELECT 
+    p.department_id, count(op.product_id) as total, count(distinct(op.product_id))
+    FROM     
+    order_prior op
+    JOIN
+    product p
+    ON 
+    p.product_id =op.product_id
+    GROUP BY
+    op.product_id, p.department_id
+    ORDER BY
+    total DESC
+    Limit 10;
+
+SELECT 
+    p.department_id, count(op.product_id) as total, count(distinct(op.product_id))
+    FROM     
+    order_prior op
+    JOIN
+    product p
+    ON 
+    p.product_id =op.product_id
+    GROUP BY
+    p.department_id
+    ORDER BY
+    total DESC
+    Limit 10;
+
+
+
+    SELECT 
+    p.department_id, 
+    count(op.product_id) as total, 
+    count(distinct(op.product_id))
+    FROM     
+    order_prior op
+    JOIN
+    product p
+    ON 
+    p.product_id =op.product_id
+    GROUP BY
+    op.product_id, p.department_id
+    ORDER BY
+    total DESC
+    Limit 10;
+    
+
+
+With top_products AS (
+    SELECT 
+    op.product_id, count(op.product_id) as total, p.department_id
+    FROM     
+    order_prior op
+    INNER JOIN
+    product p
+    ON 
+    p.product_id =op.product_id
+    GROUP BY
+    op.product_id, p.department_id
+    ORDER BY
+    total DESC)
+SELECT 
+product_id, count(product_id) as total
+FROM 
+top_products as tp
+WHERE
+tp.department_id = '1'
+GROUP BY
+tp.product_id
+ORDER BY
+total DESC limit 100;
+
+
+
+With top AS (
+SELECT 
+op.product_id, count(op.product_id) as total, p.department_id
+FROM 
+order_prior op
+JOIN
+product p
+ON 
+p.product_id =op.product_id
+GROUP BY
+op.product_id, p.department_id
+ORDER BY
+total DESC
+Limit 100)
+SELECT 
+department
+
+
+
+With top AS (
+SELECT 
+op.product_id, count(op.product_id) as total, p.department_id
+FROM 
+order_prior op
+JOIN
+product p
+ON 
+p.product_id =op.product_id
+GROUP BY
+op.product_id, p.department_id
+ORDER BY
+total DESC
+Limit 100)
+SELECT 
+department_id, 
+sum(total) OVER (PARTITION BY product_id),
+count(product_id)
+FROM
+top
+GROUP BY
+department_id, product_id
+ORDER BY
+department_id;
+
+
+SELECT
+   product_name,
+   price,
+   group_name,
+   AVG (price) OVER (
+      PARTITION BY group_name
+   )
+FROM
+   products
+   INNER JOIN 
+      product_groups USING (group_id);
+
+
+
+
+WITH total AS (
+SELECT 
+op.product_id, count(op.product_id) as total, p.department_id
+FROM 
+order_prior op
+JOIN
+product p
+ON 
+p.product_id =op.product_id
+GROUP BY
+op.product_id, p.department_id
+ORDER BY
+p.department_id)
+SELECT
+t.department_id, 
+d.department,
+sum(total)
+FROM 
+total t
+JOIN
+department d
+ON
+t.department_id=d.department_id
+GROUP BY
+t.department_id, d.department
+ORDER BY
+t.department_id, d.department;
+
+
+
+
+
+WITH total AS (
+SELECT 
+op.product_id, count(op.product_id) as total, p.department_id
+FROM 
+order_prior op
+JOIN
+product p
+ON 
+p.product_id =op.product_id
+GROUP BY
+op.product_id, p.department_id
+ORDER BY
+p.department_id)
+SELECT
+department_id,
+sum(total)
+FROM 
+total
+GROUP BY
+department_id
+ORDER BY
+department_id;
+
+department_id |   sum   
+---------------+---------
+             1 | 2236432
+             2 |   36291
+             3 | 1176787
+             4 | 9479291
+             5 |  153696
+             6 |  269253
+             7 | 2690129
+             8 |   97724
+             9 |  866627
+            10 |   34573
+            11 |  447123
+            12 |  708931
+            13 | 1875577
+            14 |  709569
+            15 | 1068058
+            16 | 5414016
+            17 |  738666
+            18 |  423802
+            19 | 2887550
+            20 | 1051249
+            21 |   69145
+(21 rows)
+
+
+Totals by department 
+
+WITH total AS (
+SELECT 
+op.product_id, count(op.product_id) as total, p.department_id
+FROM 
+order_prior op
+JOIN
+product p
+ON 
+p.product_id =op.product_id
+GROUP BY
+op.product_id, p.department_id
+ORDER BY
+p.department_id)
+SELECT
+t.department_id, 
+d.department,
+sum(total)
+FROM 
+total t
+JOIN
+department d
+ON
+t.department_id=d.department_id
+GROUP BY
+t.department_id, d.department
+ORDER BY
+t.department_id, d.department;
+
+
+ department_id |   department    |   sum   
+---------------+-----------------+---------
+             1 | frozen          | 2236432
+             2 | other           |   36291
+             3 | bakery          | 1176787
+             4 | produce         | 9479291
+             5 | alcohol         |  153696
+             6 | international   |  269253
+             7 | beverages       | 2690129
+             8 | pets            |   97724
+             9 | dry goods pasta |  866627
+            10 | bulk            |   34573
+            11 | personal care   |  447123
+            12 | meat seafood    |  708931
+            13 | pantry          | 1875577
+            14 | breakfast       |  709569
+            15 | canned goods    | 1068058
+            16 | dairy eggs      | 5414016
+            17 | household       |  738666
+            18 | babies          |  423802
+            19 | snacks          | 2887550
+            20 | deli            | 1051249
+            21 | missing         |   69145
+(21 rows)
+
+
+
+
+
+
+
+
+SELECT
+p.department_id,
+COUNT (p.product_id) OVER (PARTITION BY p.department_id)
+FROM
+product p
+LEFT JOIN 
+order_prior op 
+ON 
+op.product_id=p.product_id
+GROUP BY
+department_id, p.product_id
+ORDER BY
+department_id;
+
+
+
+
+
+
+SELECT
+   p.department_id
+   count(op.product_id) as total, 
+   SUM(total) OVER (
+      PARTITION BY group_name
+   )
+FROM
+product
+   INNER JOIN 
+      product_groups USING (group_id);
+
+
+
+
+
+SELECT
+   product_id,
+   price,
+   group_name,
+   AVG (price) OVER (
+      PARTITION BY group_name
+   )
+FROM
+   products
+   INNER JOIN 
+      product_groups USING (group_id);
+
+
+
+SELECT
+   product_id,
+   COUNT(order_id),
+   p.department_id,
+   AVG(add_to_cart_order) OVER (
+      PARTITION BY product_id
+   )
+FROM
+order_prior 
+INNER JOIN 
+product p USING (product_id)
+GROUP BY
+product_id, add_to_cart_order, p.department_id;
+
+
+
+SELECT 
+product_id,
+COUNT(order_id) as total_orders,
+SUM(reordered) as total_reorders 
+FROM
+order_prior
+GROUP BY
+product_id
+ORDER BY 
+total_orders DESC
+LIMIT 20;
+
+
+
+SELECT 
+order_prior.product_id,
+COUNT(order_id) as total_orders,
+SUM(reordered) as total_reorders,
+department_id 
+FROM
+order_prior
+LEFT JOIN
+product
+ON 
+product.product_id=order_prior.product_id
+GROUP BY
+order_prior.product_id, product.department_id
+ORDER BY 
+total_orders DESC;
+
+ product_id | total_orders | total_reorders 
+------------+--------------+----------------
+      24852 |       472565 |         398609
+      13176 |       379450 |         315913
+      21137 |       264683 |         205845
+      21903 |       241921 |         186884
+      47209 |       213584 |         170131
+      47766 |       176815 |         134044
+      47626 |       152657 |         106255
+      16797 |       142951 |          99802
+      26209 |       140627 |          95768
+      27845 |       137905 |         114510
+      27966 |       137057 |         105409
+      22935 |       113426 |          79072
+      24964 |       109778 |          74663
+      45007 |       104823 |          72165
+      39275 |       100060 |          62922
+      49683 |        97315 |          67313
+      28204 |        89632 |          63811
+
+
+
+
+
+
+SELECT 
+order_prior.product_id,
+COUNT(order_id) as total_orders,
+SUM(reordered) as total_reorders,
+department_id 
+FROM
+order_prior
+LEFT JOIN
+product
+ON 
+product.product_id=order_prior.product_id
+GROUP BY
+order_prior.product_id, product.department_id
+ORDER BY 
+total_orders DESC;
+
+
+ product_id | total_orders | total_reorders | department_id 
+------------+--------------+----------------+---------------
+      24852 |       472565 |         398609 |             4
+      13176 |       379450 |         315913 |             4
+      21137 |       264683 |         205845 |             4
+      21903 |       241921 |         186884 |             4
+      47209 |       213584 |         170131 |             4
+      47766 |       176815 |         134044 |             4
+      47626 |       152657 |         106255 |             4
+      16797 |       142951 |          99802 |             4
+      26209 |       140627 |          95768 |             4
+      27845 |       137905 |         114510 |            16
+      27966 |       137057 |         105409 |             4
+      22935 |       113426 |          79072 |             4
+      24964 |       109778 |          74663 |             4
+      45007 |       104823 |          72165 |             4
+      39275 |       100060 |          62922 |             4
+      49683 |        97315 |          67313 |             4
+      28204 |        89632 |          63811 |             4
+
+
+
+ITH user_total_order_by_day AS (
+SELECT
+user_id,
+order_dow, 
+COUNT(order_id) as count_of_order
+FROM
+order_insta
+GROUP BY
+user_id, 
+order_dow
+ORDER BY
+user_id)
+SELECT 
+user_id,
+MAX(count_of_order),
+COUNT(order_dow)
+FROM 
+user_total_order_by_day
+GROUP BY
+user_id,
+order_dow
+ORDER BY
+user_id
+LIMIT 10;
+
+
+
+WITH insta_dow AS(
+SELECT 
+user_id,
+order_dow, 
+COUNT(order_id) AS number_order
+FROM
+order_insta
+GROUP BY
+user_id, 
+order_dow
+ORDER BY
+user_id)
+SELECT 
+user_id, 
+COUNT(order_dow) OVER (PARTITION BY user_id) AS num_of_day_of_week,
+MAX(number_order) as day_most_orders
+FROM
+insta_dow
+GROUP BY
+user_id,
+order_dow,
+number_order
+ORDER BY
+number_order DESC;
+
+
+SELECT 
+user_id, 
+MAX(numer_order),
+FROM 
+GROUP BY id
+
+

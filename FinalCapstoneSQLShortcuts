@@ -1,0 +1,63 @@
+SQL Shortcuts
+
+CREATE TABLE t (
+     id INT PRIMARY KEY,
+     name VARCHAR NOT NULL,
+     price INT DEFAULT 0
+); HEADER CSV DELIMITER ',';
+
+
+
+CREATE TABLE t (order_id INT PRIMARY KEY, user_id VARCHAR NOT NULL, eval_set VARCHAR, order_number INT DEFAULT 0, oder_dow INT, order_hour_of_day INT, days_since_prior_order INT DEFAULT 0); 
+
+
+COPY persons TO 'C:\tmp\persons_db.csv' DELIMITER ',' CSV HEADER;
+\copy zip_codes FROM '/path/to/csv/ZIP_CODES.txt' DELIMITER ',' CSV
+
+
+ALTER TABLE t
+RENAME COLUMN oder_dow TO order_dow;
+
+
+ALTER TABLE t ALTER COLUMN days_since_prior_order TYPE numeric;
+
+SELECT
+   product_name,
+   price,
+   group_name,
+   AVG (price) OVER (
+      PARTITION BY group_name
+   )
+FROM
+   products
+   INNER JOIN 
+      product_groups USING (group_id);
+
+
+
+CREATE VIEW total_or_re AS 
+SELECT 
+order_prior.product_id,
+COUNT(order_id) as total_orders,
+SUM(reordered) as total_reorders,
+department_id 
+FROM
+order_prior
+LEFT JOIN
+product
+ON 
+product.product_id=order_prior.product_id
+GROUP BY
+order_prior.product_id, product.department_id
+ORDER BY 
+total_orders DESC;
+
+
+#to update view
+CREATE OR REPLACE view_name 
+query
+
+
+
+
+Views

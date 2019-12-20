@@ -1,0 +1,186 @@
+CREATE TABLE persons
+(
+  id serial NOT NULL,
+  first_name character varying(50),
+  last_name character varying(50),
+  dob date,
+  email character varying(255),
+  CONSTRAINT persons_pkey PRIMARY KEY (id)
+)
+
+
+Create table department(
+
+department_id numeric
+department varchar)
+
+
+
+
+CREATE OR REPLACE VIEW customers
+
+
+SELECT * FROM order_insta GROUP BY order_id;
+
+
+
+order_insta
+
+ order_id | user_id | eval_set | order_number | order_dow | order_hour_of_day | days_since_prior_order 
+----------+---------+----------+--------------+-----------+-------------------+------------------------
+  2539329 | 1       | prior    |            1 |         2 |                 8 |                       
+  2398795 | 1       | prior    |            2 |         3 |                 7 |                   15.0
+   473747 | 1       | prior    |            3 |         3 |                12 |                   21.0
+  2254736 | 1       | prior    |            4 |         4 |                 7 |                   29.0
+  
+  
+  
+  department_id	department
+1	frozen
+2	other
+3	bakery
+
+
+CREATE TABLE aisle(
+aisle_id numeric,
+aisle varchar(50))
+
+
+Orders per user_id
+
+SELECT 
+oi.user_id,oi.order_id, oi.order_number, op.product_id
+FROM
+order_insta oi
+JOIN
+order_prior op
+ON 
+oi.order_id=op.order_id
+ORDER BY 
+oi.user_id
+Limit
+100;
+
+
+ user_id | order_id | order_number | product_id 
+---------+----------+--------------+------------
+ 1       |  2539329 |            1 | 14084
+ 1       |  2550362 |           10 | 25133
+ 1       |  2550362 |           10 | 12427
+ 1       |  2539329 |            1 | 26405
+ 1       |  2550362 |           10 | 13032
+ 1       |  2550362 |           10 | 196
+ 1       |  2539329 |            1 | 12427
+ 1       |  2254736 |            4 | 26405
+ 1       |  2550362 |           10 | 38928
+ 1       |  2254736 |            4 | 10258
+ 1       |  2550362 |           10 | 35951
+ 1       |  2539329 |            1 | 196
+ 1       |  2539329 |            1 | 26088
+ 1       |  2254736 |            4 | 25133
+ 1       |  2254736 |            4 | 196
+ 1       |  2550362 |           10 | 46149
+ 1       |  2254736 |            4 | 12427
+ 1       |  2550362 |           10 | 10258
+ 1       |  2550362 |           10 | 39657
+ 1       |   550135 |            7 | 25133
+ 
+
+With user_order AS(
+    SELECT 
+    oi.user_id,oi.order_id, oi.order_number, op.product_id
+    FROM
+    order_insta oi
+    JOIN
+    order_prior op
+    ON 
+    oi.order_id=op.order_id
+    ORDER BY 
+    oi.user_id)
+
+SELECT 
+user_id, 
+count(distinct(order_id)), 
+count(distinct(product_id))
+GROUP BY
+user_id
+ORDER BY
+user_id
+LIMIT 10;
+
+
+ user_id | count | count 
+---------+-------+-------
+ 1       |    10 |    18
+ 10      |     5 |    94
+ 100     |     5 |    20
+ 1000    |     7 |    32
+ 10000   |    72 |   256
+ 100000  |     9 |    66
+ 100001  |    66 |   207
+ 
+ 
+ALTER TABLE order_products__prior
+RENAME TO order_prior;
+
+
+ALTER TABLE table_name
+ALTER COLUMN column_name [SET DATA] TYPE new_data_type;
+
+
+ALTER TABLE product
+ALTER COLUMN product_name TYPE VARCHAR;
+
+
+
+
+
+
+With user_order AS(
+    SELECT 
+    oi.user_id,oi.order_id, oi.order_number, op.product_id
+    FROM
+    order_insta oi
+    JOIN
+    order_prior op
+    ON 
+    oi.order_id=op.order_id
+    ORDER BY 
+    oi.user_id)
+
+SELECT 
+user_id, 
+order_id, 
+product_id
+FROM
+user_order
+GROUP BY
+user_id
+ORDER BY
+user_id, order_id, product_id
+LIMIT 20;
+
+
+
+
+With user_order AS(
+    SELECT 
+    oi.user_id,oi.order_id, oi.order_number, op.product_id
+    FROM
+    order_insta oi
+    JOIN
+    order_prior op
+    ON 
+    oi.order_id=op.order_id
+    ORDER BY 
+    oi.user_id)
+
+SELECT 
+user_id, 
+count(distinct(order_id)), 
+count(distinct(product_id))
+GROUP BY
+user_id
+ORDER BY
+user_id
+LIMIT 10;

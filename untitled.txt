@@ -1,0 +1,30 @@
+Final Capstone Business Problem & Questions
+ 
+Exploratory Questions
+How is grocery shopping different around certain days (weekdays vs weekends, dow) and hours, and how should marketers and/or manufacturers prepare? 
+What is the most frequently ordered item per customer?
+How much time elapses before a customer reorders specific products? (For example, how much time elapses before a customer reorders specific products? That's a good proxy for how long it takes people to finish the product, and could inform marketing strategy)
+When are these products ordered most? Possibly by day of week/weekday/weekend and time?
+ 
+Business insights for marketing
+By looking at product order frequency, do we see other trends/insights?
+What products are usually bought with popular products? 
+When are they purchased?
+What products should be advertised together? 
+When is the best time to promote a product?
+ 
+Business relevance and application
+By picking one manufacturer and exploring the categories the company has products in 
+What products should be advertised together? 
+When is the best time to promote a product?
+Can we make product recommendations to customers to increase the # of items customers purchase? (Based on the product category/department/aisle? Day/time of purchase?)
+ 
+Building a business case for the marketing plan
+By trying predictive/forecasting methods,
+Will a customer reorder the most frequently ordered product AND product x?
+Will the customer reorder the most frequently ordered product AND products from the same department or aisle?
+Does ordering a certain product say X times result in more purchases? (increase frequency) More items per order?  (increase in quantity- purchase more items/per order)
+
+
+
+

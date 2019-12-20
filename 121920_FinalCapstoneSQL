@@ -1,0 +1,465 @@
+FINAL CAPSTONE - SQL QUERIES & TABLES 
+
+
+SELECT * from product LIMIT 100;
+
+ product_id |                           product_name                            | aisle_id | department_id 
+------------+-------------------------------------------------------------------+----------+---------------
+          1 | Chocolate Sandwich Cookies                                        | 61       | 19
+          2 | All-Seasons Salt                                                  | 104      | 13
+          3 | Robust Golden Unsweetened Oolong Tea                              | 94       | 7
+          4 | Smart Ones Classic Favorites Mini Rigatoni With Vodka Cream Sauce | 38       | 1
+          5 | Green Chile Anytime Sauce                                         | 5        | 13
+          6 | Dry Nose Oil                                                      | 11       | 11
+          7 | Pure Coconut Water With Orange                                    | 98       | 7
+          8 | Cut Russet Potatoes Steam N' Mash                                 | 116      | 1
+          9 | Light Strawberry Blueberry Yogurt                                 | 120      | 16
+         10 | Sparkling Orange Juice & Prickly Pear Beverage                    | 115      | 7
+
+
+
+SELECT aisle_id, count(product_id) FROM product GROUP BY aisle_id ORDER BY aisle_id;
+ aisle_id | count 
+----------+-------
+ 1        |   146
+ 10       |   218
+ 100      |  1258
+ 101      |   355
+ 102      |   132
+
+
+##ALTER TABLE product ALTER COLUMN aisle_id::numeric TYPE numeric;
+ALTER TABLE product ALTER COLUMN aisle_id TYPE numeric USING aisle_id::numeric;
+
+
+ WITH aisle_count AS (
+ SELECT 
+ aisle_id, 
+ count(product_id) as total
+ FROM product 
+ GROUP BY aisle_id 
+ ORDER BY total DESC)
+ SELECT ac.aisle_id, a.aisle, ac.total
+ FROM 
+ aisle_count ac
+ JOIN 
+aisle a
+ON 
+ ac.aisle_id=a.aisle_id
+ LIMIT 20;
+
+ aisle_id |        aisle         | total 
+----------+----------------------+-------
+      100 | missing              |  1258
+       45 | candy chocolate      |  1246
+       37 | ice cream ice        |  1091
+       47 | vitamins supplements |  1038
+      120 | yogurt               |  1026
+      107 | chips pretzels       |   989
+       94 | tea                  |   894
+       21 | packaged cheese      |   891
+       38 | frozen meals         |   880
+       61 | cookies cakes        |   874
+        3 | energy granola bars  |   832
+       22 | hair care            |   816
+      104 | spices seasonings    |   797
+       98 | juice nectars        |   792
+       78 | crackers             |   747
+       69 | soup broth bouillon  |   737
+       92 | baby food formula    |   718
+       26 | coffee               |   680
+       31 | refrigerated         |   675
+      114 | cleaning products    |   655
+
+ SELECT * FROM order_prior LIMIT 100;
+
+  order_id | product_id | add_to_cart_order | reordered 
+----------+------------+-------------------+-----------
+        2 | 33120      | 1                 | 1
+        2 | 28985      | 2                 | 1
+        2 | 9327       | 3                 | 0
+        2 | 45918      | 4                 | 1
+        2 | 30035      | 5                 | 0
+        2 | 17794      | 6                 | 1
+        2 | 40141      | 7                 | 1
+        2 | 1819       | 8                 | 1
+        2 | 43668      | 9                 | 0
+        3 | 33754      | 1                 | 1
+        3 | 24838      | 2                 | 1
+        3 | 17704      | 3                 | 1
+        3 | 21903      | 4                 | 1
+        3 | 17668      | 5                 | 1
+        3 | 46667      | 6                 | 1
+        3 | 17461      | 7                 | 1
+        3 | 32665      | 8                 | 1  
+
+
+
+SELECT 
+op.product_id, count(op.product_id) as total, p.department_id
+FROM 
+order_prior op
+JOIN
+product p
+ON 
+p.product_id =op.product_id
+GROUP BY
+op.product_id, p.department_id
+ORDER BY
+total DESC
+Limit 100;
+
+Totals by products and departments
+
+ product_id | total  | department_id 
+------------+--------+---------------
+      24852 | 472565 |             4
+      13176 | 379450 |             4
+      21137 | 264683 |             4
+      21903 | 241921 |             4
+      47209 | 213584 |             4
+      47766 | 176815 |             4
+      47626 | 152657 |             4
+      16797 | 142951 |             4
+      26209 | 140627 |             4
+      27845 | 137905 |            16
+      27966 | 137057 |             4
+      22935 | 113426 |             4
+      24964 | 109778 |             4
+      45007 | 104823 |             4
+      39275 | 100060 |             4
+      49683 |  97315 |             4
+
+Top departments
+
+With top_products AS (
+    SELECT 
+    op.product_id, count(op.product_id) as total, p.department_id
+    FROM     
+    order_prior op
+    INNER JOIN
+    product p
+    ON 
+    p.product_id =op.product_id
+    GROUP BY
+    op.product_id, p.department_id
+    ORDER BY
+    total DESC)
+SELECT
+tp.department_id, count(tp.department_id) as total, count(distinct(product_id)) as total_products
+FROM
+top_products tp
+GROUP BY
+tp.department_id
+ORDER BY
+department_id;
+
+
+ department_id | count 
+---------------+-------
+             1 |  4007
+             2 |   548
+             3 |  1516
+             4 |  1684
+             5 |  1054
+             6 |  1139
+             7 |  4363
+             8 |   972
+             9 |  1858
+            10 |    38
+            11 |  6563
+            12 |   907
+            13 |  5370
+            14 |  1114
+            15 |  2092
+            16 |  3448
+            17 |  3083
+            18 |  1081
+            19 |  6263
+            20 |  1322
+            21 |  1255
+(21 rows)
+
+
+
+SELECT 
+order_prior.product_id,
+COUNT(order_id) as total_orders,
+SUM(reordered) as total_reorders,
+department_id 
+FROM
+order_prior
+LEFT JOIN
+product
+ON 
+product.product_id=order_prior.product_id
+GROUP BY
+order_prior.product_id, product.department_id
+ORDER BY 
+total_orders DESC;
+
+
+ product_id | total_orders | total_reorders | department_id 
+------------+--------------+----------------+---------------
+      24852 |       472565 |         398609 |             4
+      13176 |       379450 |         315913 |             4
+      21137 |       264683 |         205845 |             4
+      21903 |       241921 |         186884 |             4
+      47209 |       213584 |         170131 |             4
+      47766 |       176815 |         134044 |             4
+      47626 |       152657 |         106255 |             4
+      16797 |       142951 |          99802 |             4
+      26209 |       140627 |          95768 |             4
+      27845 |       137905 |         114510 |            16
+      27966 |       137057 |         105409 |             4
+      22935 |       113426 |          79072 |             4
+      24964 |       109778 |          74663 |             4
+      45007 |       104823 |          72165 |             4
+      39275 |       100060 |          62922 |             4
+      49683 |        97315 |          67313 |             4
+      28204 |        89632 |          63811 |             4
+
+
+
+
+	
+
+
+
+
+WITH total_or_re AS (
+SELECT 
+order_prior.product_id,
+COUNT(order_id) as total_order,
+SUM(reordered) as total_reorder,
+department_id 
+FROM
+order_prior
+LEFT JOIN
+product
+ON 
+product.product_id=order_prior.product_id
+GROUP BY
+order_prior.product_id, product.department_id
+ORDER BY 
+total_order DESC)
+SELECT 
+department_id, 
+SUM (total_order) as total_order,
+SUM (total_reorder) as total_reorder
+FROM 
+total_or_re
+GROUP BY
+department_id
+ORDER BY
+department_id,
+
+
+
+1
+COPY persons TO 'C:\tmp\persons_db.csv' DELIMITER ',' CSV HEADER;
+
+
+CREATE VIEW total_or_re AS 
+SELECT 
+order_prior.product_id,
+COUNT(order_id) as total_orders,
+SUM(reordered) as total_reorders,
+AVG(add_to_cart_order) as avg_add_to_cart,
+department_id 
+FROM
+order_prior
+LEFT JOIN
+product
+ON 
+product.product_id=order_prior.product_id
+GROUP BY
+order_prior.product_id, product.department_id
+ORDER BY 
+total_orders DESC;
+
+
+
+SELECT
+   product_id,
+   product_name,
+   price,
+   group_name,
+   AVG (price) OVER (
+      PARTITION BY group_name
+   )
+FROM
+   products
+   INNER JOIN 
+      product_groups USING (group_id);
+
+
+
+
+SELECT 
+order_insta.user_id, 
+order_insta.order_id, 
+order_insta.order_number,
+order_prior.product_id 
+FROM
+order_insta
+JOIN
+order_prior
+ON 
+order_insta.order_id=order_prior.order_id
+ORDER BY
+user_id
+Limit 100;
+
+ user_id | order_id | order_number | product_id 
+---------+----------+--------------+------------
+ 1       |  2550362 |           10 |      39657
+ 1       |  2550362 |           10 |      10258
+ 1       |  2550362 |           10 |      13032
+ 1       |  3108588 |            8 |      49235
+ 1       |  2550362 |           10 |      46149
+ 1       |  2295261 |            9 |      49235
+ 1       |  2295261 |            9 |      12427
+ 1       |  3108588 |            8 |      10258
+ 1       |  3108588 |            8 |        196
+ 1       |  2550362 |           10 |      12427
+
+
+
+
+CREATE VIEW user_order AS 
+SELECT 
+user_id, 
+MAX(order_number) AS num_order,
+MAX(days_since_prior_order) AS max_days_since_order,
+MIN(days_since_prior_order) AS min_days_since_order,
+AVG(days_since_prior_order) AS avg_days_since_order
+FROM
+order_insta
+GROUP BY
+user_id
+ORDER BY
+user_id;
+
+ user_id | num_order | max_days_since_order | min_days_since_order | avg_days_since_order 
+---------+-----------+----------------------+----------------------+----------------------
+       1 |        11 |                 30.0 |                  0.0 |  19.0000000000000000
+       2 |        15 |                 30.0 |                  3.0 |  16.2857142857142857
+       3 |        13 |                 21.0 |                  7.0 |  12.0000000000000000
+       4 |         6 |                 30.0 |                  0.0 |  17.0000000000000000
+       5 |         5 |                 19.0 |                  6.0 |  11.5000000000000000
+       6 |         4 |                 22.0 |                  6.0 |  13.3333333333333333
+       7 |        21 |                 30.0 |                  2.0 |  10.4500000000000000
+       8 |         4 |                 30.0 |                 10.0 |  23.3333333333333333
+       9 |         4 |                 30.0 |                  6.0 |  22.0000000000000000
+      10 |         6 |                 30.0 |                 12.0 |  21.8000000000000000
+
+ALTER TABLE order_insta ALTER COLUMN user_id TYPE numeric USING user_id::integer;
+
+
+
+WITH user_order_dow
+(SELECT 
+user_id, 
+order_id,
+order_number,
+order_dow
+FROM
+order_insta
+GROUP BY
+user_id, order_id
+ORDER BY
+user_id);
+
+ user_id | order_id | order_number | order_dow 
+---------+----------+--------------+-----------
+       1 |  3108588 |            8 |         1
+       1 |  3367565 |            6 |         2
+       1 |  2295261 |            9 |         1
+       1 |  2550362 |           10 |         4
+       1 |   550135 |            7 |         1
+       1 |   431534 |            5 |         4
+       1 |  2254736 |            4 |         4
+       1 |  1187899 |           11 |         4
+       1 |  2398795 |            2 |         3
+
+
+
+SELECT * 
+FROM user_order_dow
+(
+    	'SELECT Product_Name, Product_Category, Product_Count
+    	 FROM test_crosstab
+    	 ORDER BY 1,2'
+)AS T (Product_Name text, IT INT, ELE INT)
+
+
+WITH user_order_dow AS
+(SELECT 
+user_id, 
+order_id,
+order_number,
+order_dow
+FROM
+order_insta
+GROUP BY
+user_id, order_id
+ORDER BY
+user_id)
+SELECT
+user_id,
+Max(order_number),
+order_dow,
+count(order_id) OVER(user_id PARTITION BY order_dow) as count
+FROM 
+user_order_dow
+LIMIT 10;
+
+
+
+COUNT(CASE WHEN order_dow= '0' THEN "count" ELSE 0 END) Sunday,
+SUM(CASE WHEN order_dow= '1' THEN "count" ELSE 0 END) Monday,
+SUM(CASE WHEN order_dow= '2' THEN "count" ELSE 0 END) Tuesday,
+SUM(CASE WHEN order_dow= '3' THEN "count" ELSE 0 END) Wednesday,
+SUM(CASE WHEN order_dow= '4' THEN "count" ELSE 0 END) Thursday,
+SUM(CASE WHEN order_dow= '5' THEN "count" ELSE 0 END) Friday,
+SUM(CASE WHEN order_dow= '6' THEN "count" ELSE 0 END) Saturday
+FROM 
+order_insta
+GROUP BY 
+user_id
+Limit 10;
+
+
+
+SELECT 
+user_id,
+order_dow, 
+COUNT(order_id)
+FROM
+order_insta
+GROUP BY
+user_id, 
+order_dow
+ORDER BY
+user_id,
+count DESC
+LIMIT 10;
+
+
+ user_id | order_dow | count 
+---------+-----------+-------
+       1 |         1 |     3
+       1 |         2 |     2
+       1 |         3 |     2
+       1 |         4 |     4
+       2 |         1 |     6
+       2 |         2 |     5
+       2 |         3 |     2
+       2 |         4 |     1
+       2 |         5 |     1
+       3 |         0 |     6
+       3 |         1 |     2
+       3 |         2 |     1
+       3 |         3 |     3
+

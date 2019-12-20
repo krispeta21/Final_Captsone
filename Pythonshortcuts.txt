@@ -1,0 +1,9 @@
+Python Shortcuts for final capstone:
+
+
+
+Group BY
+
+like pivot table
+
+df.groupby(['key1', 'key2'])[['data2']].mean()

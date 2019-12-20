@@ -1,0 +1,49 @@
+Final Capstone Project
+
+
+Info for Final Capstone:
+During the week of December 9th, the class will spend time exploring the potential datasets for their final capstones (see list below).  Please reach out with links to other specific datasets and topics you might have ideas about for capstone ASAP to discuss. Slack me with any questions.
+
+Deadlines:
+Selection of dataset for final capstone            Tuesday December 18th  
+Final capstone presentation are scheduled for      Tuesday Jan 14th
+TTP graduation scheduled for                       Wednesday January 15th 
+Preliminary final capstone presentation            _____________
+
+
+Requirements:
+- Target length for Final Presentations: 5-7 minutes
+- For the final capstone, pretend you are working for the company whose data you are studying. Your final presentation is a data analysis presented to management. Give us insights in your presentation. Tell us a story about our company. (Follow this article closely about what a data analyst does https://hbr.org/2018/12/what-great-data-analysts-do-and-why-every-organization-needs-them )
+- You can use python or excel or sql as you desire to do extensive data exploration deep dives, to find the story you want to tell.
+- You must use Tableau for visualizations.
+- Models: For your final capstone you must find some question that you want to try to model. Some of these datasets lead themselves to models, e.g. churn and fraud detection are naturally logistic regression models. Others, like airbnb and instacart, you will have to use your data exploration and business knowledge to choose out what you want to study. The kaggle-defined instacart task is to predict which previously purchased products will be in a user’s next order, but you should NOT answer that question because linear models are not powerful enough to answer it. For instacart, please choose another question to make a model on.
+
+
+Datasets:
+http://insideairbnb.com/get-the-data.html (must use cities outside of NYC)
+https://www.kaggle.com/olistbr/brazilian-ecommerce (this is Capstone 3 dataset, see below)
+https://github.com/albahnsen/ML_RiskManagement/blob/master/datasets/cost_sensitive_classification_churn.csv.zip (see also: https://github.com/albahnsen/ML_RiskManagement/blob/master/exercises/10_CS_Churn.ipynb)
+https://www.kaggle.com/c/ieee-fraud-detection/data (See #8 for better data)
+https://www.kaggle.com/mlg-ulb/creditcardfraud (See #8 for better data)
+https://www.instacart.com/datasets/grocery-shopping-2017 (===>see also: https://www.kaggle.com/c/instacart-market-basket-analysis )
+https://www.kaggle.com/c/elo-merchant-category-recommendation/data
+https://www.kaggle.com/c/home-credit-default-risk/data
+https://www.kaggle.com/c/zillow-prize-1/overview (data on characteristics of homes for sale)
+https://www.kaggle.com/c/coupon-purchase-prediction/overview 
+https://www.kaggle.com/c/kkbox-churn-prediction-challenge/overview
+
+Note: datasets #4 and #5 are likely too anonymized for you to do your best to data work. If you were leaning towards those I'd like to suggest dataset #8 instead, where you need to predict whether or not someone will default on their home loan.
+
+Note: You do have the ability to continue with the module 3 capstone dataset for your final capstone. HOWEVER, you'd need to teach yourself to do a customer lifetime value model using survival analysis and the Python lifelines package as part of your capstone. It's a STRETCH goal, but google-able, and doable in three weeks. (see, for example, https://towardsdatascience.com/survival-analysis-intuition-implementation-in-python-504fde4fcf8e))
+
+
+Data Files
+
+aisle = pd.read_csv(aisles.csv                      
+oop = order_products__prior.csv       
+oot = order_products__train.csv 
+order = orders.csv
+department = departments.csv                 
+product =      products.csv
+
+ NT550992
