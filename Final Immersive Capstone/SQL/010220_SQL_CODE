@@ -1,0 +1,2141 @@
+122219 SQL Queries
+
+  \sv order_dow
+
+   order_id | product_id | add_to_cart_order | reordered 
+----------+------------+-------------------+-----------
+ 2 |      40141 |   7 |  1
+ 2 |      28985 |   2 |  1
+ 2 |1819 |   8 |  1
+ 2 |      30035 |   5 |  0
+ 2 |9327 |   3 |  0
+ 2 |      17794 |   6 |  1
+
+  department_id |   department    
+---------------+-----------------
+      1 | frozen
+      2 | other
+      3 | bakery
+      4 | produce
+      5 | alcohol
+      6 | international
+
+
+
+user_id, order_id, dow, department, # of items
+
+SELECT oi.user_id, oi.order_dow, oi.order_id, op.product_id, p.department_id, add_to_cart_order, reordered
+FROM
+order_prior op
+JOIN
+order_insta oi
+ON 
+op.order_id=oi.order_id
+JOIN 
+product p
+ON 
+op.product_id=p.product_id
+ORDER BY 
+oi.user_id
+LIMIT 3;
+
+ user_id | order_id | product_id | department_id | add_to_cart_order | reordered 
+---------+----------+------------+---------------+-------------------+-----------
+1 |   431534 | 196 |      7 |   1 |  1
+1 |  3108588 | 196 |      7 |   2 |  1
+1 |   431534 |      10258 |     19 |   3 |  1
+(3 rows)
+
+WITH user_order_product_dept AS
+(SELECT oi.user_id, oi.order_dow, op.product_id, op.order_id, p.department_id, add_to_cart_order, reordered
+FROM
+order_prior op
+JOIN
+order_insta oi
+ON 
+op.order_id=oi.order_id
+JOIN 
+product p
+ON 
+op.product_id=p.product_id
+ORDER BY 
+oi.user_id)
+SELECT
+user_id, order_dow, department.department, count(user_order_product_dept.product_id) AS total_product, count(distinct(user_order_product_dept.product_id) AS total_order
+FROM
+user_order_product_dept 
+JOIN
+department
+ON
+user_order_product_dept.department_id=department.department_id
+GROUP BY
+user_order_product_dept.user_id, department.department, user_order_product_dept.order_dow
+ORDER BY 
+user_id, total_order DESC
+LIMIT 100;
+
+
+
+
+ user_id | order_dow |   department    | total_product | total_order 
+---------+-----------+-----------------+---------------+-------------
+1 |  4 | snacks   |      7 |    7
+1 |  1 | snacks   |      6 |    6
+1 |  3 | snacks   |      5 |    5
+1 |  1 | beverages|      5 |    5
+1 |  1 | dairy eggs      |      5 |    5
+1 |  4 | dairy eggs      |      5 |    5
+1 |  4 | beverages|      4 |    4
+1 |  4 | produce  |      4 |    4
+1 |  2 | snacks   |      4 |    4
+1 |  2 | beverages|      2 |    2
+1 |  3 | beverages|      2 |    2
+1 |  2 | dairy eggs      |      2 |    2
+1 |  3 | produce  |      1 |    1
+1 |  3 | breakfast|      1 |    1
+1 |  1 | breakfast|      1 |    1
+1 |  4 | breakfast|      1 |    1
+1 |  3 | pantry   |      1 |    1
+1 |  3 | dairy eggs      |      1 |    1
+1 |  2 | household|      1 |    1
+1 |  4 | household|      1 |    1
+2 |  1 | dairy eggs      |     19 |   19
+2 |  2 | snacks   |     19 |   19
+2 |  2 | dairy eggs      |     18 |   18
+2 |  2 | produce  |     18 |   18
+2 |  1 | snacks   |     14 |   14
+2 |  2 | frozen   |     13 |   13
+2 |  2 | deli     |     12 |   12
+2 |  3 | dairy eggs      |     10 |   10
+2 |  1 | produce  |      9 |    9
+2 |  1 | deli     |      7 |    7
+2 |  3 | snacks   |      5 |    5
+2 |  3 | produce  |      5 |    5
+2 |  2 | pantry   |      4 |    4
+2 |  1 | pantry   |      4 |    4
+2 |  1 | beverages|      4 |    4
+2 |  2 | beverages|      3 |    3
+2 |  1 | frozen   |      3 |    3
+2 |  3 | breakfast|      3 |    3
+2 |  5 | snacks   |      2 |    2
+2 |  4 | snacks   |      2 |    2
+2 |  5 | produce  |      2 |    2
+2 |  3 | beverages|      2 |    2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE OR REPLACE VIEW user_order_product_dept AS
+SELECT oi.user_id, oi.order_id, op.product_id, p.department_id, add_to_cart_order, reordered
+FROM
+order_prior op
+JOIN
+order_insta oi
+ON 
+op.order_id=oi.order_id
+JOIN 
+product p
+ON 
+op.product_id=p.product_id
+ORDER BY 
+oi.user_id
+
+
+
+
+CREATE VIEW uopdB AS
+WITH user_order_product_dept AS
+(SELECT oi.user_id, oi.order_dow, op.product_id, op.order_id, p.department_id, add_to_cart_order, reordered
+FROM
+order_prior op
+JOIN
+order_insta oi
+ON 
+op.order_id=oi.order_id
+JOIN 
+product p
+ON 
+op.product_id=p.product_id
+ORDER BY 
+oi.user_id)
+SELECT
+user_id, 
+order_dow, 
+department.department, 
+count(user_order_product_dept.product_id) AS total_product, 
+count(distinct(user_order_product_dept.product_id), 
+count(user_order_product_dept.order_id) AS total_order
+FROM
+user_order_product_dept 
+JOIN
+department
+ON
+user_order_product_dept.department_id=department.department_id
+GROUP BY
+user_order_product_dept.user_id, department.department, user_order_product_dept.order_dow
+ORDER BY 
+user_id, total_order DESC
+LIMIT 10;
+
+
+COPY uopd TO '/Users/cristinasandoval/Desktop/uopd.csv' DELIMITER ',' CSV HEADER;
+
+
+
+
+COPY user_order_product_dept TO 'C:\tmp\persons_db.csv' DELIMITER ',' CSV HEADER; 
+
+
+
+/Users/cristinasandoval/Desktop
+
+
+
+ user_id | order_dow |   department    | total_product | total_order 
+---------+-----------+-----------------+---------------+-------------
+1 |  4 | snacks   |      7 |    7
+1 |  1 | snacks   |      6 |    6
+1 |  3 | snacks   |      5 |    5
+1 |  1 | beverages|      5 |    5
+1 |  1 | dairy eggs      |      5 |    5
+1 |  4 | dairy eggs      |      5 |    5
+1 |  4 | beverages|      4 |    4
+1 |  4 | produce  |      4 |    4
+1 |  2 | snacks   |      4 |    4
+1 |  2 | beverages|      2 |    2
+
+
+
+
+
+
+COPY 
+ (WITH user_order_product_dept AS (
+  SELECT oi.user_id,
+     oi.order_dow,
+     op.product_id,
+     op.order_id,
+     p.department_id,
+     p.aisle_id,
+     op.add_to_cart_order,
+     op.reordered
+    FROM order_prior op
+      JOIN order_insta oi ON op.order_id = oi.order_id
+      JOIN product p ON op.product_id = p.product_id
+   ORDER BY oi.user_id
+ )
+ SELECT user_order_product_dept.user_id,
+    user_order_product_dept.order_dow,
+    department.department,
+    count(user_order_product_dept.product_id) AS total_product,
+    count(user_order_product_dept.order_id) AS total_order
+   FROM user_order_product_dept
+     JOIN department ON user_order_product_dept.department_id::numeric = department.department_id
+  GROUP BY user_order_product_dept.user_id, department.department, user_order_product_dept.order_dow
+  ORDER BY user_order_product_dept.user_id, (count(user_order_product_dept.order_id)) DESC) TO '/Users/cristinasandoval/Desktop/uopd.csv' DELIMITER ',' CSV HEADER;
+
+
+
+  df.to_csv(r'Path where you want to store the exported CSV file\File Name.csv')
+
+
+
+COPY (query) TO '/Users/cristinasandoval/Desktop/uopd.csv' DELIMITER ',' CSV HEADER;
+
+
+  SELECT department, count(distinct('product_id)) as total_product from uopd WHERE user_id='4694' ORDER BY department;
+
+
+
+
+Top product
+
+WITH
+SELECT 
+oi.user_id,
+oi.order_dow,
+op.product_id,
+p.product_name,
+op.order_id,
+p.department_id,
+FROM order_prior op
+JOIN 
+order_insta oi ON op.order_id = oi.order_id
+JOIN product p 
+ON 
+op.product_id = p.product_id
+ORDER BY oi.user_id
+
+SELECT 
+oi.user_id,
+oi.order_dow,
+p.product_name,
+count(op.product_id),
+count(distinct(op.order_id))
+FROM order_prior op
+JOIN 
+order_insta oi 
+ON 
+op.order_id = oi.order_id
+JOIN product p 
+ON 
+op.product_id = p.product_id
+GROUP BY oi.user_id, p.product_name, oi.order_dow 
+ORDER BY oi.user_id, p.product_name, oi.order_dow 
+LIMIT 10;
+
+user_id | order_dow | product_name | count | count 
+---------+-----------+----------------------------+-------+-------
+1 |  4 | 0% Greek Strained Yogurt   |     1 |     1
+1 |  2 | Aged White Cheddar Popcorn |     1 |     1
+1 |  3 | Aged White Cheddar Popcorn |     1 |     1
+1 |  3 | Bag of Organic Bananas     |     1 |     1
+1 |  4 | Bag of Organic Bananas     |     1 |     1
+1 |  4 | Bartlett Pears      |     1 |     1
+1 |  1 | Cinnamon Toast Crunch      |     1 |     1
+1 |  3 | Cinnamon Toast Crunch      |     1 |     1
+1 |  4 | Cinnamon Toast Crunch      |     1 |     1
+1 |  3 | Creamy Almond Butter|     1 |     1
+
+
+
+
+
+SELECT 
+oi.user_id,
+oi.order_dow,
+p.product_name,
+p.product_id,
+op.order_id
+FROM order_prior op
+JOIN 
+order_insta oi 
+ON 
+op.order_id = oi.order_id
+JOIN product p 
+ON 
+op.product_id = p.product_id
+ORDER BY oi.user_id, p.product_name, oi.order_dow
+LIMIT 500;
+
+ user_id | order_dow | product_name | product_id | order_id 
+---------+-----------+----------------------------+------------+----------
+1 |  4 | 0% Greek Strained Yogurt   |      38928 |  2550362
+1 |  2 | Aged White Cheddar Popcorn |      26088 |  2539329
+1 |  3 | Aged White Cheddar Popcorn |      26088 |  2398795
+1 |  3 | Bag of Organic Bananas     |      13176 |  2398795
+1 |  4 | Bag of Organic Bananas     |      13176 |   431534
+1 |  4 | Bartlett Pears      |      41787 |   431534
+1 |  1 | Cinnamon Toast Crunch      |      13032 |   5501
+
+
+
+CREATE VIEW insta_user_product_purchase AS
+(SELECT 
+oi.user_id,
+oi.order_dow,
+p.product_name,
+p.product_id,
+op.order_id
+FROM order_prior op
+JOIN 
+order_insta oi 
+ON 
+op.order_id = oi.order_id
+JOIN product p 
+ON 
+op.product_id = p.product_id
+ORDER BY oi.user_id, p.product_name, oi.order_dow)
+
+
+
+COPY insta_user_product
+
+
+COPY
+(SELECT 
+oi.user_id,
+oi.order_dow,
+p.product_name,
+p.product_id,
+op.order_id
+FROM order_prior op
+JOIN 
+order_insta oi 
+ON 
+op.order_id = oi.order_id
+JOIN product p 
+ON 
+op.product_id = p.product_id
+ORDER BY oi.user_id, p.product_name, oi.order_dow)
+TO 
+‘/Users/cristinasandoval/Desktop/insta_product_total.csv’ DELIMITER ‘,’ CSV HEADER;
+
+
+
+SELECT 
+user_id,
+product_name,
+count(product_name) as total,
+count(order_id) as num_times_ordered
+FROM
+insta_user_product_purchase
+GROUP BY
+user_id,product_name
+ORDER BY 
+total DESC, user_id
+LIMIT 100;
+
+
+SELECT 
+user_id,
+product_name,
+product_id,
+order_id
+FROM
+insta_user_product_purchase
+GROUP BY
+user_id,product_name
+ORDER BY 
+total DESC
+LIMIT 20;
+
+
+\COPY
+(SELECT 
+p.product_name,
+p.product_id,
+op.order_id
+FROM order_prior op
+JOIN order_insta oi ON op.order_id = oi.order_id
+JOIN product p ON op.product_id = p.product_id
+ORDER BY oi.user_id, p.product_name, oi.order_dow) TO '/Users/cristinasandoval/Desktop/insta_user_product_total.csv’ DELIMITER ‘,’ CSV HEADER;
+
+COPY persons TO 'C:\tmp\persons_db.csv' DELIMITER ',' CSV HEADER;
+
+
+
+\COPY (
+    
+    
+\copy(SELECT 
+user_id,
+product_name,
+product_id,
+order_id
+FROM
+insta_user_product_purchase
+GROUP BY
+user_id,product_name
+ORDER BY 
+total DESC;) TO 'Users/cristinasandoval/Desktop/Final_Capstone/insta_user_product_total.csv’ DELIMITER ‘,’ CSV HEADER;
+
+
+  \copy(SELECT * FROM insta_user_product) to 'C:\tmp\persons_client.csv' with csv
+
+
+
+COPY 
+(SELECT 
+oi.user_id,
+
+op.product_id,
+op.order_id,
+p.department_id,
+p.aisle_id,
+op.add_to_cart_order,
+op.reordered
+FROM order_prior op
+JOIN order_insta oi 
+ON op.order_id = oi.order_id
+JOIN product p 
+ON op.product_id = p.product_id) TO '/Users/cristinasandoval/Desktop/uopd.csv' DELIMITER ',' CSV HEADER;
+
+
+
+
+CREATE OR REPLACE VIEW user_order_product AS
+ SELECT oi.user_id,
+    oi.order_dow,
+    oi.order_id,
+    op.product_id,
+    p.product_name,
+    p.department_id,
+    op.add_to_cart_order,
+    op.reordered
+   FROM order_prior op
+     JOIN order_insta oi ON op.order_id = oi.order_id
+     JOIN product p ON op.product_id = p.product_id
+  ORDER BY oi.user_id
+
+
+table = pivot_table(df, values='D', index=['A', 'B'], columns=['C'], aggfunc=np.sum)
+table = pivot_table(, values='D', index=['A', 'B'], columns=['C'], aggfunc=np.sum)
+
+
+
+
+ WITH orders AS(
+ SELECT 
+ user_id, 
+ num_order 
+ FROM user_order 
+ ORDER BY num_order)
+ SELECT 
+ num_order, 
+ count(user_id)
+ FROM
+ orders
+ GROUP BY
+ num_order
+ ORDER BY
+ num_order DESC;
+
+
+
+SELECT 
+oi.user_id,
+p.product_name,
+p.product_id,
+op.order_id
+FROM order_prior op
+JOIN 
+order_insta oi 
+ON 
+op.order_id = oi.order_id
+JOIN product p 
+ON 
+op.product_id = p.product_id
+ORDER BY oi.user_id, p.product_name, oi.order_dow
+LIMIT 500;
+
+
+SELECT 
+* 
+FROM
+
+LIMIT 10;
+
+
+SELECT 
+* 
+FROM
+product
+LIMIT 10;
+
+
+SELECT 
+* 
+FROM
+order_prior
+LIMIT 10;
+
+
+SELECT 
+* 
+FROM 
+order_prior op
+JOIN
+product p
+ON
+op.product_id=p.product_id
+LIMIT 10;
+
+CREATE TABLE pct_order_bydept AS 
+(SELECT 
+op.order_id,
+p.product_id,
+p.product_name,
+p.aisle_id,
+p.department_id,
+op.add_to_cart_order,
+op.reordered
+FROM 
+order_prior op
+JOIN
+product p
+ON
+op.product_id=p.product_id 
+ORDER BY 
+op.order_id);
+
+
+COPY persons(first_name,last_name,dob,email) 
+FROM 'C:\tmp\persons.csv' DELIMITER ',' CSV HEADER;
+
+
+
+
+CREATE TABLE persons
+(
+  id serial NOT NULL,
+  first_name character varying(50),
+  last_name character varying(50),
+  dob date,
+  email character varying(255),
+  CONSTRAINT persons_pkey PRIMARY KEY (id)
+)
+
+CREATE TABLE persons
+(
+  order_id serial NOT NULL,
+  first_name character varying(50),
+  last_name character varying(50),
+  dob date,
+  email character varying(255),
+  CONSTRAINT persons_pkey PRIMARY KEY (id)
+)
+
+COPY 
+dpo(order_id,product_id,department_id) 
+FROM
+'/Users/cristinasandoval/Desktop/dpo.csv' DELIMITER ',' CSV HEADER;
+
+
+     View "public.user_order_product_dept"
+      Column|  Type   | 
+-------------------+---------+
+ user_id    | numeric |    |   | 
+ order_id   | integer |    |   | 
+ product_id | integer |    |   | 
+ department_id     | integer |    |   | 
+ add_to_cart_order | integer |    |   | 
+ reordered  | integer |    |   | 
+
+
+ECT * FROM pqt1_py LIMIT 10; 
+ user_id | product_qt | quartilespqt 
+---------+------------+--------------
+  201268 |3725 |     3
+  129928 |3638 |     3
+  164055 |3061 |     3
+  186704 |2936 |     3
+  176478 |2921 |     3
+
+  SELECT 
+  p.user_id,
+  u.order_id,
+  u.department_id,
+  p.product_qt,
+  p.quartilespqt
+  FROM
+  user_order_product_dept u 
+  JOIN
+  pqt1_py p 
+  ON
+  u.user_id=p.user_id
+  LIMIT 10;
+
+
+
+ user_id
+ order_id 
+ department_id 
+ product_qt 
+ quartilespqt 
+
+
+USERS_GROUPS_DEPARTMENT
+
+ CREATE TABLE insta_users AS
+( SELECT 
+p.user_id,
+u.order_id,
+u.department_id,
+p.product_qt,
+p.quartilespqt
+FROM
+user_order_product_dept u 
+JOIN
+pqt1_py p 
+ON
+u.user_id=p.user_id);
+
+
+
+
+SELECT
+   product_name,
+   price,
+   group_name,
+   AVG (price) OVER (
+      PARTITION BY group_name
+   )
+FROM
+   products
+   INNER JOIN 
+      product_groups USING (group_id);
+
+
+
+
+SELECT
+   product_name,
+   price,
+   group_name,
+   AVG (price) OVER (
+      PARTITION BY group_name
+   )
+FROM
+   products
+   INNER JOIN 
+      product_groups USING (group_id);
+
+
+user_id | order_id | department_id | product_qt | quartilespqt 
+---------+----------+---------------+------------+--------------
+1 |  2295261 |     19 |  59 |     1
+1 |   550135 |     19 |  59 |     1
+1 |  3108588 |     19 |  59 |     1
+1 |   431534 |     19 |  59 |     1
+1 |   431534 |      4 |  59 |     1
+1 |  3108588 |     19 |  59 |     1
+1 |   431534 |     19 |  59 |     1
+1 |  2295261 |     19 |  59 |     1
+1 |   550135 |     19 |  59 |     1
+1 |   431534 |     16 |  59 |     1
+1 |  2295261 |     16 |  59 |     1
+
+
+
+SELECT
+d.department,
+SUM(i.product_qt),
+i.quartilespqt
+FROM
+insta_users i
+JOIN
+department d
+ON 
+d.department_id=i.department_id
+GROUP BY
+d.department,
+i.quartilespqt
+ORDER BY 
+d.department, 
+i.quartilespqt;
+
+SELECT
+department,
+department_id,
+SUM(product_qt) OVER (PARTITION BY 'quartilespqt')
+FROM
+insta_users
+JOIN
+department 
+ON 
+d.department_id=i.department_id;
+
+GROUP BY
+department_id;
+
+
+WITH insta_cat AS (
+SELECT 
+user_id, 
+quartilespqt,
+CASE WHEN
+quartilespqt = 0 THEN 'low_insta'
+ELSE
+ THEN 'power_user'
+END
+FROM 
+pqt1_py
+)
+SELECT 
+department_id,
+SUM(product_qt)
+FROM
+insta_cat;
+
+
+COPY 
+(SELECT
+d.department,
+SUM(i.product_qt),
+i.quartilespqt
+FROM
+insta_users i
+JOIN
+department d
+ON 
+d.department_id=i.department_id
+GROUP BY
+d.department,
+i.quartilespqt
+ORDER BY 
+d.department, 
+i.quartilespqt)
+TO 
+‘/Users/cristinasandoval/Desktop/insta_users_dept.csv’ DELIMITER ‘,’ CSV HEADER;
+
+
+UPDATE table
+SET column1 = value1,
+    column2 = value2 ,...
+WHERE
+   condition;
+
+
+
+   SELECT title, description, rental_rate,
+	CASE
+	WHEN title ILIKE '%halloween%' OR description ILIKE '%halloween%' THEN 'Halloween' 
+	WHEN title ILIKE '%christmas%' OR description ILIKE '%christmas%' THEN 'Christmas' 
+    END
+
+COPY (SELECT
+d.department,
+SUM(i.product_qt),
+i.quartilespqt
+FROM
+insta_users i
+JOIN
+department d
+ON 
+d.department_id=i.department_id
+GROUP BY
+d.department,
+i.quartilespqt
+ORDER BY 
+d.department, 
+i.quartilespqt) TO '/Users/cristinasandoval/Desktop/insta_users_dept.csv' DELIMITER ',' CSV HEADER;
+
+
+Update table
+
+UPDATE insta_users
+SET quartilespqt = 'low'
+WHERE quartilespqt = 0;
+
+ALTER TABLE insta_users
+ADD quartilespqt varchar(50);
+
+ALTER TABLE insta_users
+ALTER COLUMN quartilespqt character varying(50)
+
+
+ALTER TABLE insta_users
+ADD user_cat varchar(50) NOT NULL DEFAULT (0)
+
+
+ALTER TABLE Protocols
+ADD ProtocolTypeID varchar(50) NOT NULL DEFAULT(1)
+
+UPDATE insta_users SET quartilespqt = user_cat;
+
+UPDATE insta_users
+SET user_cat = 
+CASE WHEN quartilespqt = 0 THEN 'low_cart'
+ELSE 'power' END
+
+
+
+ Table "public.insta_users"
+    Column     |         Type          |
+---------------+-----------------------+
+ user_id       | numeric               |
+ order_id      | integer               |
+ department_id | integer               |
+ product_qt    | integer               |
+ quartilespqt  | integer               |
+ user_cat      | character varying(50) | 
+
+
+
+ Table "public.insta_basket"
+    Column    |       Type         
+--------------+-------------------
+ order_id     | integer           
+ product_id   | integer           
+ product_name | character varying 
+ quantity     | integer           
+
+
+ WITH power_users AS (
+     SELECT user_id 
+     FROM insta_user_product
+     WHERE user_cat= 'low_cart'
+ )
+
+
+ WITH user_cat AS (
+
+SELECT user_id FROM 
+ )
+
+
+ CREATE OR REPLACE VIEW public.total_or_re AS
+ SELECT order_prior.product_id,
+    sum(order_prior.reordered) AS total_reorders,
+    product.department_id
+   FROM order_prior
+     LEFT JOIN product ON product.product_id = order_prior.product_id
+  GROUP BY order_prior.product_id, product.department_id
+  ORDER BY (count(order_prior.order_id)) DESC
+
+
+     Column     |  Type  
+----------------+--------
+ product_id     | integer
+ total_orders   | bigint 
+ total_reorders | bigint 
+ department_id  | integer 
+
+
+                 Table "public.user_groups_department"
+      Column       |       Type        | Collation | Nullable | Default 
+-------------------+-------------------+-----------+----------+---------
+ order_id          | integer           |           |          | 
+ product_id        | integer           |           |          | 
+ product_name      | character varying |           |          | 
+ aisle_id          | numeric           |           |          | 
+ department_id     | integer           |           |          | 
+ add_to_cart_order | integer           |           |          | 
+ reordered         | integer 
+
+
+        View "public.order_dow"
+  Column   |  Type   | Collation | Nullable | Default 
+-----------+---------+-----------+----------+---------
+ user_id   | numeric |           |          | 
+ order_dow | integer |           |          | 
+ count     | bigint  |           |          | 
+
+
+ WITH power_user AS (
+    SELECT user_id
+    FROM insta_users
+    WHERE 
+    user_cat = 'power_user'
+ )
+ SELECT 
+ department_id,
+ SUM(product_qt) AS total_product_qt
+ FROM
+ insta_users i
+ JOIN
+ power_user p
+ ON
+ i.user_id=p.user_id 
+ GROUP BY
+ p.user_id,
+ i.department_id
+ ORDER BY
+ total_product_qt DESC;
+
+
+
+WITH power_user AS (
+   SELECT 
+   user_id
+   FROM
+   insta_users
+   WHERE
+   user_cat = 'power_user'
+)
+
+WITH power_user AS (
+    SELECT      
+    department_id,
+    SUM(product_qt) AS total_product_qt
+    FROM insta_users
+    WHERE 
+    user_cat = 'power_user'
+    GROUP BY
+    department_id
+ )
+ SELECT 
+ p.department_id,
+ p.total_product_qt,
+ t.total_orders,
+ p.total_product_qt/t.total_orders AS pct_of_total
+ FROM
+ power_user p
+ JOIN
+ total_or_re t
+ ON
+ p.department_id=t.department_id
+ GROUP BY
+ p.department_id
+ ORDER BY
+ p.total_product_qt DESC;
+
+
+
+
+ SUM(i.product_qt)/t.total_orders
+ FROM
+ insta_users i
+ JOIN
+ total_or_re t
+ ON 
+ t.department_id=i.department_id
+ GROUP BY 
+ i.department_id
+ ORDER BY
+ total_product_qt DESC;
+
+
+
+
+  user_cat | department_id | total_product_qt 
+----------+---------------+------------------
+ power    |             4 |       4051601445
+ power    |            16 |       2371367290
+ power    |            19 |       1267473054
+ power    |             7 |       1071548077
+ power    |             1 |        884106120
+ power    |            13 |        754510007
+ power    |             3 |        513691288
+ power    |            20 |        456064872
+ power    |            15 |        435532331
+ power    |             9 |        362003358
+ power    |            14 |        309064647
+ power    |            12 |        283510951
+ power    |            17 |        266994053
+ power    |            18 |        234540562
+ power    |            11 |        161374161
+ power    |             6 |        111370128
+ power    |             5 |         41051057
+ power    |             8 |         37090460
+ power    |            21 |         25290423
+ power    |            10 |         16023378
+ power    |             2 |         13541461
+ low_cart |             4 |          8868138
+ low_cart |            16 |          4858788
+ low_cart |             7 |          3593672
+ low_cart |            19 |          2983339
+ low_cart |             1 |          2326171
+ low_cart |            13 |          2070808
+ low_cart |            17 |          1171151
+ low_cart |             3 |          1101218
+ low_cart |            15 |           984562
+ low_cart |            20 |           972680
+ low_cart |             9 |           748047
+ low_cart |            12 |           733423
+ low_cart |            14 |           711783
+ low_cart |            11 |           666272
+ low_cart |             5 |           415705
+ low_cart |             6 |           241657
+ low_cart |            18 |           215010
+ low_cart |             8 |           109802
+ low_cart |            21 |            78103
+ low_cart |             2 |            52093
+ low_cart |            10 |            29930
+(42 rows)
+
+
+
+
+COPY (query) TO '/Users/cristinasandoval/Desktop/insta_users_dept.csv' DELIMITER ',' CSV HEADER;
+
+
+WITH low_insta AS
+ SELECT 
+   user_id,
+   FROM
+   insta_users
+   WHERE
+   user_cat='low_cart'
+
+
+WITH power_user AS (
+   SELECT 
+   user_id,
+   FROM
+   insta_users
+   WHERE
+   user_cat='power'
+
+WITH totals AS (
+   SELECT 
+   department_id,
+   user_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'power'
+   GROUP BY
+   user_id,
+   department_id
+   ORDER BY
+   department_id DESC;
+ )
+ SELECT 
+ p.department_id,
+ p.total_product_qt,
+ t.total_orders,
+ p.total_product_qt/t.total_orders AS pct_of_total
+ FROM
+ power_user p
+ JOIN
+ total_or_re t
+ ON
+ p.department_id=t.department_id
+ GROUP BY
+ p.department_id
+ ORDER BY
+ p.total_product_qt DESC;
+
+
+
+
+WITH totals AS (
+   SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'power'
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC;
+ )
+ SELECT 
+ p.department_id,
+ p.total_product_qt,
+ t.total_orders,
+ p.total_product_qt/t.total_orders AS pct_of_total
+ FROM
+ power_user p
+ JOIN
+ total_or_re t
+ ON
+ p.department_id=t.department_id
+ GROUP BY
+ p.department_id
+
+ ORDER BY
+ p.total_product_qt DESC;
+
+
+
+
+ SUM(i.product_qt)/t.total_orders
+ FROM
+ insta_users i
+ JOIN
+ total_or_re t
+ ON 
+ t.department_id=i.department_id
+ GROUP BY 
+ i.department_id
+ ORDER BY
+ total_product_qt DESC;
+
+
+
+
+WITH power_total AS (
+   SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'power'
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC),
+
+   pct AS (
+   SELECT 
+   p.department_id,
+   p.total_product_qt,
+   (p.total_product_qt/SUM(p.total_product_qt)) AS pct
+   FROM
+   power_total p
+   GROUP BY
+   p.department_id)
+
+   SELECT
+   p.department_id,
+   (SUM(p.total_product_qt)/pct.grand_total)) AS pct
+   FROM
+   pct
+   JOIN
+   power_total p
+   ON
+   pct.department_id=p.department_id
+   GROUP BY
+   p.department_id
+   ORDER BY
+   pct DESC;
+
+ ORDER BY
+ p.total_product_qt DESC;
+
+
+SELECT 
+    name,
+   amount,
+    PERCENT_RANK() OVER (
+      PARTITION BY year
+        ORDER BY amount
+    )
+FROM 
+    sales_stats;
+
+
+    Test
+
+   WITH power_total AS (
+   SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'power'
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC)
+   SELECT SUM(p.total_product_qt) as grand_total
+   FROM 
+   power_total p);
+   
+   SELECT 
+   p.department_id,
+   t.total_orders,
+   SUM(p.total_product_qt) AS p.grand_total,
+   (p.total_product_qt/SUM(t.total_orders)) as pct
+   FROM
+   power_total p
+   JOIN
+   total_or_re t
+   ON
+   t.department_id=p.department_id
+   GROUP BY
+   t.department_id,p.department_id
+   ORDER BY 
+   pct DESC;
+
+
+
+
+   WITH power_total AS (
+   SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'power'
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC)
+   SELECT SUM(p.total_product_qt) as grand_total
+   FROM 
+   power_total p;
+
+    grand_total 
+-------------
+ 13667749123
+(1 row)
+
+
+
+   WITH low_cart_total AS (
+   SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'low_cart'
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC)
+   SELECT SUM(l.total_product_qt) as grand_total
+   FROM 
+   low_cart_total l;
+
+   grand_total 
+-------------
+    32932352
+(1 row)
+
+
+
+   WITH power_total AS (
+   SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'power'
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC)
+   SELECT 
+   t.department_id,
+   SUM(t.total_orders) as dept_total, 
+   SUM(t.total_orders)/SUM(p.total_product_qt) AS pct
+   FROM
+   power_total p
+   JOIN
+   total_or_re t
+   ON
+   t.department_id=p.department_id
+   GROUP BY
+   t.department_id
+   ORDER BY
+   pct DESC;
+
+    grand_total 
+-------------
+ 13667749123
+(1 row)
+
+
+
+   WITH low_cart_total AS (
+   SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'low_cart'
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC)
+   SELECT SUM(l.total_product_qt) as grand_total
+   FROM 
+   low_cart_total l;
+
+   grand_total 
+-------------
+    32932352
+(1 row)
+
+
+
+
+
+WITH power_total AS (
+   SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'power'
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC)
+   SELECT 
+   t.department_id,
+   SUM(t.total_orders) as dept_total, 
+   SUM(t.total_orders)/SUM(p.total_product_qt) AS pct
+   FROM
+   power_total p
+   JOIN
+   total_or_re t
+   ON
+   t.department_id=p.department_id
+   GROUP BY
+   t.department_id
+   ORDER BY
+   pct DESC;
+
+
+ department_id | dept_total |            pct             
+---------------+------------+----------------------------
+            10 |      34573 | 0.000056780523399852653450
+             2 |      36291 | 0.000004890495387074151419
+             5 |     153696 | 0.000003552201637062789267
+            12 |     708931 | 0.000002756936998209574656
+             8 |      97724 | 0.000002710645666033954858
+            21 |      69145 | 0.000002178517042988188774
+             6 |     269253 | 0.000002122599746346447392
+            14 |     709569 | 0.000002060915153335726203
+            20 |    1051249 | 0.000001743602640985423169
+            18 |     423802 | 0.000001671549902182847911
+             3 |    1176787 | 0.000001511111325203446158
+             4 |    9479291 | 0.000001389335238607740591
+             9 |     866627 | 0.000001288468800040213837
+            15 |    1068058 | 0.000001172229799526523166
+            17 |     738666 | 0.000000897372996261769732
+            16 |    5414016 | 0.000000662145531753715652
+             1 |    2236432 | 0.000000631294431348371645
+             7 |    2690129 | 0.000000575408445654954381
+            13 |    1875577 | 0.000000462908982945743823
+            11 |     447123 | 0.000000422173150006454512
+            19 |    2887550 | 0.000000363754492916006133
+(21 rows)
+
+
+ WITH low_cart_total AS (
+   SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'low_cart'
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC)
+   SELECT 
+   t.department_id,
+   SUM(t.total_orders) as dept_total, 
+   SUM(t.total_orders)/SUM(p.total_product_qt) AS pct
+   FROM
+   power_total p
+   JOIN
+   total_or_re t
+   ON
+   t.department_id=p.department_id
+   GROUP BY
+   t.department_id
+   ORDER BY
+   pct DESC;
+
+
+             4 |          8868138
+            16 |          4858788
+             7 |          3593672
+            19 |          2983339
+             1 |          2326171
+            13 |          2070808
+            17 |          1171151
+             3 |          1101218
+            15 |           984562
+            20 |           972680
+             9 |           748047
+            12 |           733423
+            14 |           711783
+            11 |           666272
+             5 |           415705
+             6 |           241657
+            18 |           215010
+             8 |           109802
+            21 |            78103
+             2 |            52093
+            10 |            29930
+
+
+
+   WITH low_cart_total AS (
+   SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'low_cart'
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC)
+   SELECT
+   t.department_id,
+   SUM(t.total_orders) as dept_total, 
+   SUM(t.total_orders)/SUM(p.total_product_qt) AS pct
+   FROM
+   low_cart_total p
+   JOIN
+   total_or_re t
+   ON
+   t.department_id=p.department_id
+   GROUP BY
+   t.department_id
+   ORDER BY
+   pct DESC;
+
+   LOW_CART_TOTALS
+
+ department_id | dept_total |          pct           
+---------------+------------+------------------------
+            10 |      34573 | 0.03039812193363462113
+            18 |     423802 | 0.00182338613770992129
+             2 |      36291 | 0.00127127354068194432
+            12 |     708931 | 0.00106571764208305686
+             6 |     269253 | 0.00097822204795793781
+             8 |      97724 | 0.00091563992140585564
+            14 |     709569 | 0.00089487387920568079
+            20 |    1051249 | 0.00081753085832943925
+            21 |      69145 | 0.00070542255137293674
+             3 |    1176787 | 0.00070489650818924602
+             4 |    9479291 | 0.00063474797757235415
+             9 |     866627 | 0.00062353038284063427
+            15 |    1068058 | 0.00051854934179406612
+             5 |     153696 | 0.00035078152025729273
+            16 |    5414016 | 0.00032316500642144042
+             1 |    2236432 | 0.00023993561534255875
+            17 |     738666 | 0.00020457930132381200
+             7 |    2690129 | 0.00017157320240442794
+            13 |    1875577 | 0.00016866337196048888
+            19 |    2887550 | 0.00015454127675147600
+            11 |     447123 | 0.00010225229017431130
+(21 rows)
+
+
+
+
+
+Non_produce
+
+SELECT aisle_id, 
+
+
+SELECT 
+COUNT(user_id),
+COUNT(DISTINCT(order_id),
+SUM(product_qt),
+MEAN(product_qt)
+FROM
+insta_cart
+WHERE
+user
+WHERE
+   user_cat='low_cart';
+
+
+WITH low_insta_np AS
+ SELECT 
+   user_id,
+   order_id,
+   user_cat
+   FROM
+   insta_users
+   WHERE
+   user_cat='low_cart'
+   AND 
+   department_id != 4
+   ORDER BY
+   order_id
+   LIMIT 20;
+
+
+
+
+_________________________
+
+
+ SELECT 
+   order_id,
+   SUM(product_qt)
+   FROM
+   insta_users
+   WHERE
+   user_cat='low_cart'
+   AND 
+   department_id != 4
+   GROUP BY
+   order_id
+   ORDER BY
+   order_id;)
+   
+
+ order_id | sum 
+----------+-----
+        7 |  30
+       30 |  93
+       54 | 132
+       59 |  99
+       78 | 116
+      100 |  12
+      156 | 195
+      171 |  74
+      178 |  54
+      186 | 279
+(10 rows)
+
+
+++++++++++++++++++++++++++++++++
+
+WITH low_insta_np AS
+ (SELECT 
+   order_id,
+   SUM(product_qt) as order_total
+   FROM
+   insta_users
+   WHERE
+   user_cat='low_cart'
+   AND 
+   department_id != 4
+   GROUP BY
+   order_id
+   ORDER BY
+   order_id)
+   SELECT
+   i.department_id,
+   SUM(np.order_total) as dept_total
+   FROM
+   low_insta_np np
+   JOIN
+   user_groups_department i
+   ON
+   i.order_id=np.order_id
+   GROUP BY
+   i.department_id
+   ORDER BY
+   dept_total DESC;
+
+
+instacart_prodqt_bydept	
+
+
+    WITH low_cart_total AS (
+   SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'low_cart'
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC)
+   SELECT
+   t.department_id,
+   SUM(t.total_orders) as dept_total, 
+   SUM(t.total_orders)/SUM(p.total_product_qt) AS pct
+   FROM
+   low_cart_total p
+   JOIN
+   total_or_re t
+   ON
+   t.department_id=p.department_id
+   GROUP BY
+   t.department_id
+   ORDER BY
+   pct DESC;
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+WITH power_np AS
+(SELECT 
+order_id,
+department_id
+FROM
+insta_users
+WHERE
+user_cat='power'
+AND 
+department_id != 4),
+order_totals AS (
+SELECT
+np.department_id,
+np.order_id,
+COUNT(i.product_id) as dept_total
+FROM
+power_np np
+JOIN
+insta_user_product_purchase i
+ON
+i.order_id=np.order_id
+GROUP BY
+np.department_id,
+np.order_id
+ORDER BY
+dept_total DESC)
+SELECT 
+ot.department_id,
+sum(ot.dept_total) as grand_total
+FROM
+order_totals ot
+GROUP BY 
+ot.department_id
+ORDER BY
+grand_total DESC;
+
+ department_id | dept_total 
+---------------+------------
+             4 |   37791405
+            16 |   29668913
+             7 |   19583150
+            19 |   18425987
+             1 |   15305453
+            13 |   13425885
+            17 |    7151260
+             3 |    6944152
+            15 |    6683259
+            20 |    6100155
+             9 |    5329150
+            14 |    4672487
+            12 |    4316260
+            11 |    4145128
+             5 |    2190260
+            18 |    1675854
+             6 |    1645288
+             8 |     723454
+            21 |     520283
+             2 |     298624
+            10 |     147440
+(21 rows)
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+ SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'power'
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC)
+   SELECT
+   t.department_id,
+   SUM(t.total_orders) as dept_total, 
+   SUM(t.total_orders)/SUM(p.total_product_qt) AS pct
+   FROM
+   low_cart_total p
+   JOIN
+   total_or_re t
+   ON
+   t.department_id=p.department_id
+   GROUP BY
+   t.department_id
+   ORDER BY
+   pct DESC;
+
+
+
+
+
+
+ SELECT 
+   order_id,
+   SUM(product_qt)
+   FROM
+   insta_users
+   WHERE
+   user_cat='low_cart'
+   AND 
+   department_id != 4
+   GROUP BY
+   order_id
+   ORDER BY
+   order_id;)
+   
+
+ order_id | sum 
+----------+-----
+        7 |  30
+       30 |  93
+       54 | 132
+       59 |  99
+       78 | 116
+      100 |  12
+      156 | 195
+      171 |  74
+      178 |  54
+      186 | 279
+(10 rows)
+
+
+++++++++++++++++++++++++++++++++
+
+WITH low_insta_np AS
+ (SELECT 
+   order_id,
+   SUM(product_qt) as order_total
+   FROM
+   insta_users
+   WHERE
+   user_cat='low_cart'
+   AND 
+   department_id != 4
+   GROUP BY
+   order_id
+   ORDER BY
+   order_id)
+   SELECT
+   i.department_id,
+   SUM(np.order_total) as dept_total
+   FROM
+   low_insta_np np
+   JOIN
+   user_groups_department i
+   ON
+   i.order_id=np.order_id
+   GROUP BY
+   i.department_id
+   ORDER BY
+   dept_total DESC;
+
+
+instacart_prodqt_bydept	
+
+
+   WITH low_cart_total AS (
+   SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'low_cart'
+   AND 
+   department_id != 4
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC)
+   SELECT
+   l.department_id,
+   SUM(t.total_orders) as dept_total, 
+   SUM(t.total_orders)/SUM(p.total_product_qt) AS pct
+   FROM
+   low_cart_total p
+   JOIN
+   total_or_re t
+   ON
+   t.department_id=p.department_id
+   GROUP BY
+   t.department_id
+   ORDER BY
+   pct DESC;
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+WITH power_np AS
+(SELECT 
+order_id,
+department_id
+FROM
+insta_users
+WHERE
+user_cat='power'
+AND 
+department_id != 4),
+order_totals AS (
+SELECT
+np.department_id,
+np.order_id,
+COUNT(i.product_id) as dept_total
+FROM
+power_np np
+JOIN
+insta_user_product_purchase i
+ON
+i.order_id=np.order_id
+GROUP BY
+np.department_id,
+np.order_id
+ORDER BY
+dept_total DESC)
+SELECT 
+ot.department_id,
+sum(ot.dept_total) as grand_total
+FROM
+order_totals ot
+GROUP BY 
+ot.department_id
+ORDER BY
+grand_total DESC;
+
+ department_id | dept_total 
+---------------+------------
+             4 |   37791405
+            16 |   29668913
+             7 |   19583150
+            19 |   18425987
+             1 |   15305453
+            13 |   13425885
+            17 |    7151260
+             3 |    6944152
+            15 |    6683259
+            20 |    6100155
+             9 |    5329150
+            14 |    4672487
+            12 |    4316260
+            11 |    4145128
+             5 |    2190260
+            18 |    1675854
+             6 |    1645288
+             8 |     723454
+            21 |     520283
+             2 |     298624
+            10 |     147440
+(21 rows)
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+ SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'power'
+   AND
+   department_id != 4
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC)
+   SELECT
+   t.department_id,
+   SUM(t.total_orders) as dept_total, 
+   SUM(t.total_orders)/SUM(p.total_product_qt) AS pct
+   FROM
+   low_cart_total p
+   JOIN
+   total_or_re t
+   ON
+   t.department_id=p.department_id
+   GROUP BY
+   t.department_id
+   ORDER BY
+   pct DESC;
+
+
+
+
+
+WITH power_total AS (
+   SELECT 
+   department_id,
+   SUM(product_qt) AS total_product_qt
+   FROM insta_users
+   WHERE 
+   user_cat = 'power'
+   GROUP BY
+   department_id
+   ORDER BY
+   total_product_qt DESC)
+   SELECT SUM(p.total_product_qt) as grand_total
+   FROM 
+   power_total p;
+
+
+
+SELECT 
+department_id,
+SUM(product_qt) AS total_product_qt,
+insta_users
+WHERE 
+user_cat = 'power'
+AND 
+department_id != 4
+GROUP BY
+department_id
+ORDER BY
+total_product_qt DESC;
+
+
+SELECT 
+department_id,
+SUM(product_qt) AS total_product_qt
+FROM insta_users
+WHERE 
+user_cat = 'low_cart'
+AND 
+department_id != 4
+GROUP BY
+department_id
+ORDER BY
+total_product_qt DESC;
+
+
+
+SELECT 
+department_id,
+SUM(product_qt) AS total_product_qt
+FROM insta_users
+WHERE 
+user_cat = 'power'
+AND 
+department_id != 4
+GROUP BY
+department_id
+ORDER BY
+total_product_qt DESC;
+
+power
+
+department_id | total_product_qt 
+---------------+------------------
+            16 |       2371367290
+            19 |       1267473054
+             7 |       1071548077
+             1 |        884106120
+            13 |        754510007
+             3 |        513691288
+            20 |        456064872
+            15 |        435532331
+             9 |        362003358
+            14 |        309064647
+            12 |        283510951
+            17 |        266994053
+            18 |        234540562
+            11 |        161374161
+             6 |        111370128
+             5 |         41051057
+             8 |         37090460
+            21 |         25290423
+            10 |         16023378
+             2 |         13541461
+(20 rows)
+
+low_cart
+
+ department_id | total_product_qt 
+---------------+------------------
+            16 |          4858788
+             7 |          3593672
+            19 |          2983339
+             1 |          2326171
+            13 |          2070808
+            17 |          1171151
+             3 |          1101218
+            15 |           984562
+            20 |           972680
+             9 |           748047
+            12 |           733423
+            14 |           711783
+            11 |           666272
+             5 |           415705
+             6 |           241657
+            18 |           215010
+             8 |           109802
+            21 |            78103
+             2 |            52093
+            10 |            29930
+(20 rows)
+
+
+
+SELECT 
+COUNT(DISTINCT(user_id)) AS total_users, 
+COUNT(DISTINCT(order_id)) 
+FROM insta_users 
+GROUP BY user_cat;
+
+
+SELECT 
+department_id, 
+user_cat, 
+COUNT(DISTINCT(order_id)) AS total_order 
+FROM insta_users 
+GROUP BY 
+department_id, user_cat;
+
+
+
+
+
+department_id | user_cat | total_order 
+---------------+----------+-------------
+             1 | low_cart |       55130
+             1 | power    |     1125888
+             2 | low_cart |        1899
+             2 | power    |       33157
+             3 | low_cart |       34409
+             3 | power    |      847147
+             4 | low_cart |      135544
+             4 | power    |     2273776
+             5 | low_cart |        9670
+             5 | power    |       75019
+             6 | low_cart |        7266
+             6 | power    |      214271
+             7 | low_cart |       93131
+             7 | power    |     1364220
+             8 | low_cart |        2896
+             8 | power    |       56386
+             9 | low_cart |       20219
+             9 | power    |      577643
+            10 | low_cart |        1110
+            10 | power    |       32692
+            11 | low_cart |       18353
+            11 | power    |      300202
+            12 | low_cart |       23673
+            12 | power    |      551058
+            13 | low_cart |       53426
+            13 | power    |     1064466
+            14 | low_cart |       21528
+            14 | power    |      503660
+            15 | low_cart |       26042
+            15 | power    |      655263
+            16 | low_cart |      107642
+            16 | power    |     2069696
+            17 | low_cart |       30461
+            17 | power    |      440319
+            18 | low_cart |        4417
+            18 | power    |      173295
+            19 | low_cart |       71638
+            19 | power    |     1319809
+            20 | low_cart |       29155
+            20 | power    |      741145
+            21 | low_cart |        2491
+            21 | power    |       56986
+
+
+SELECT d.department, 
+user_cat, 
+COUNT(DISTINCT(order_id)) AS total_order 
+FROM insta_users u 
+JOIN department d on 
+d.department_id=u.department_id
+GROUP BY d.department, u.user_cat; 
+
+
+ department    | user_cat | total_order 
+-----------------+----------+-------------
+ alcohol         | low_cart |        9670
+ alcohol         | power    |       75019
+ babies          | low_cart |        4417
+ babies          | power    |      173295
+ bakery          | low_cart |       34409
+ bakery          | power    |      847147
+ beverages       | low_cart |       93131
+ beverages       | power    |     1364220
+ breakfast       | low_cart |       21528
+ breakfast       | power    |      503660
+ bulk            | low_cart |        1110
+ bulk            | power    |       32692
+ canned goods    | low_cart |       26042
+ canned goods    | power    |      655263
+ dairy eggs      | low_cart |      107642
+ dairy eggs      | power    |     2069696
+ deli            | low_cart |       29155
+ deli            | power    |      741145
+ dry goods pasta | low_cart |       20219
+ dry goods pasta | power    |      577643
+ frozen          | low_cart |       55130
+ frozen          | power    |     1125888
+ household       | low_cart |       30461
+ household       | power    |      440319
+ international   | low_cart |        7266
+ international   | power    |      214271
+ meat seafood    | low_cart |       23673
+ meat seafood    | power    |      551058
+ missing         | low_cart |        2491
+ missing         | power    |       56986
+ other           | low_cart |        1899
+ other           | power    |       33157
+ pantry          | low_cart |       53426
+ pantry          | power    |     1064466
+ personal care   | low_cart |       18353
+ personal care   | power    |      300202
+ pets            | low_cart |        2896
+ pets            | power    |       56386
+ produce         | low_cart |      135544
+ produce         | power    |     2273776
+ snacks          | low_cart |       71638
+ snacks          | power    |     1319809
+
+
+
+
+
+SELECT department_id, user_cat, COUNT(DISTINCT(order_id)) AS total_order FROM insta_users WHERE department_id !=4 GROUP BY department_id, user_cat;
+ 
